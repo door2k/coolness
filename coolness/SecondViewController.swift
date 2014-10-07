@@ -11,16 +11,41 @@ import UIKit
 class SecondViewController: UIViewController {
 
     @IBOutlet weak var secondLable: UILabel!
+    var connected: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        regionLabel.textColor = UIColor.redColor()
+        //regionLabel.textColor = UIColor.grayColor()
         self.configView.alpha = 0.0
         // Do any additional setup after loading the view, typically from a nib.
     
         appConfig(defaultValues: ["test":"test"])
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "beaconVisible:", name: "beaconVisible", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "beaconDisappeared:", name: "beaconDisappeared", object: nil)
+        
+        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        
+        // Any beacon marks home at this point.
+        regionLabel.textColor = UIColor.redColor()
+        for (currBeacon: beacon, state: Int) in appDelegate.hBeacon!.beaconDictionary {
+            if state == 1 {
+                regionLabel.textColor = UIColor.greenColor()
+            }
+        }
     }
 
+    func beaconVisible(notification: NSNotification) {
+        connected = true
+        regionLabel.textColor = UIColor.greenColor()
+        NSLog("welcome to: \((notification.object as beacon).identifier)")
+    }
+    
+    func beaconDisappeared(notification: NSNotification) {
+        connected = false
+        regionLabel.textColor = UIColor.redColor()
+        NSLog("welcome to: \((notification.object as beacon).identifier)")
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -40,7 +65,7 @@ class SecondViewController: UIViewController {
                 self.configView.alpha = 1.0
                 self.configView.hidden = false
             },
-            completion: { finished in println ("success") }
+            completion: { finished in }
         )
     }
     
@@ -50,7 +75,7 @@ class SecondViewController: UIViewController {
         appConfig().update("server", value: serverText.text)
         appConfig().update("port", value: portText.text)
     
-        appConfig().debug()
+        // appConfig().debug()
     }
 
     @IBOutlet weak var configView: UIView!
@@ -63,9 +88,9 @@ class SecondViewController: UIViewController {
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         self.view.endEditing(true)
-//        self.userText.resignFirstResponder()
-//        self.serverText.resignFirstResponder()
-//        self.portText.resignFirstResponder()
+        appConfig().update("username", value: userText.text)
+        appConfig().update("server", value: serverText.text)
+        appConfig().update("port", value: portText.text)
     }
     
 }

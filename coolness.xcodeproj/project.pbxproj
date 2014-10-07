@@ -100,8 +100,8 @@
 				A76FAEA719DC863E00D87468 /* Images.xcassets */,
 				A76FAEA919DC863E00D87468 /* LaunchScreen.xib */,
 				A7A0D3A219E2CFD7008B1176 /* network.swift */,
-				A76FAE9C19DC863E00D87468 /* Supporting Files */,
 				A7B05CE619E2ECA900CE291E /* beacon.swift */,
+				A76FAE9C19DC863E00D87468 /* Supporting Files */,
 			);
 			path = coolness;
 			sourceTree = "<group>";

@@ -7,15 +7,33 @@
 //
 
 import UIKit
+import CoreLocation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     var window: UIWindow?
+    var hBeacon: beaconHandler?
+    var locationManager: CLLocationManager?
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+       
         // Override point for customization after application launch.
+        hBeacon = beaconHandler()
+        hBeacon!.add(beacon(uuid: "B0702880-A295-A8AB-F734-031A98A512DE", identifier: "Mac mini"))
+        hBeacon!.add(beacon(uuid: "B0702880-A295-A8AB-F734-031A98A512DD", identifier: "Mac air"))
+        
+//        if(application.respondsToSelector("registerUserNotificationSettings:")) {
+//            application.registerUserNotificationSettings(
+//                UIUserNotificationSettings(
+//                    forTypes: UIUserNotificationType.Alert | UIUserNotificationType.Sound,
+//                    categories: nil
+//                )
+//            )
+//        }
+        
+        hBeacon!.register()
         return true
     }
 
