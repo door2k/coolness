@@ -21,8 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        
         // Override point for customization after application launch.
         hBeacon = beaconHandler()
-        hBeacon!.add(beacon(uuid: "B0702880-A295-A8AB-F734-031A98A512DE", identifier: "Mac mini"))
-        hBeacon!.add(beacon(uuid: "B0702880-A295-A8AB-F734-031A98A512DD", identifier: "Mac air"))
+        hBeacon!.add(beacon(uuid: appConfig().params["macmini_uuid"]!, identifier: "Mac mini"))
+        hBeacon!.add(beacon(uuid: appConfig().params["macair_uuid"]!, identifier: "Mac air"))
         
 //        if(application.respondsToSelector("registerUserNotificationSettings:")) {
 //            application.registerUserNotificationSettings(

@@ -19,6 +19,8 @@ class appConfig {
         "server"    : "10.0.0.47",
         "port"      : "5000",
         "region"    : "Home",
+        "macmini_uuid"  : "B48AC6FE-2CB5-4F5A-B95F-058CE7127685",
+        "macair_uuid"   : "1CCA025F-5B41-4390-9005-C375347C7C83",
         "test"      : "1"
     ]
     
