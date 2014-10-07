@@ -28,10 +28,10 @@ class network {
     
     init ()
     {
-        appConfig() // makes sure username, server, port are defined
-        self.user = NSUserDefaults.valueForKey("username") as String
-        self.server = NSUserDefaults.valueForKey("server") as String
-        self.port = NSUserDefaults.valueForKey("port") as String
+        var config = appConfig() // makes sure username, server, port are defined
+        self.user = config.params["username"]!
+        self.server = config.params["server"]!
+        self.port = config.params["port"]!
     }
 }
 

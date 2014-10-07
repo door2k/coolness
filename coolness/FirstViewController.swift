@@ -26,19 +26,6 @@ class FirstViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-    func getURL(command: String) -> NSURL {
-        return NSURL(string: "http://10.0.0.47:5000/send_key?action=\(command)")
-    }
-    
-    func sendCommand(command: String) {
-        let url:NSURL = getURL(command)
-        
-        let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
-            println(NSString(data: data, encoding: NSUTF8StringEncoding))
-        }
-        task.resume()
-    }
     
     enum PlayState {
         case Playing
@@ -48,13 +35,14 @@ class FirstViewController: UIViewController {
     var mediaState: PlayState = .Paused
     
     @IBAction func buttonClicked(sender : AnyObject) {
-//        (sender as UIButton).imageEdgeInsets(<#title: String?#>, forState: <#UIControlState#>) UIEdgeInsetsMake(top, left, bottom, right)
         if (mediaState == .Paused) {
             (sender as UIButton).setImage(UIImage(named: "media-pause-8x"), forState: .Normal)
             mediaState = .Playing
+            network().sendCommand("Play")
         } else {
             (sender as UIButton).setImage(UIImage(named: "media-play-8x"), forState: .Normal)
             mediaState = .Paused
+            network().sendCommand("Pause")
         }
         
         return
