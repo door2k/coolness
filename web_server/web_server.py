@@ -18,16 +18,17 @@ class WebServer(threading.Thread):
     self.daemon = True
     self.started = False
     self.address = address
+    self.port = 5555
 
   def run(self):
     global ws
     self.started = True
-    ws.run(self.address)
+    ws.run(self.address, self.port)
 
   def non_threaded_run(self):
     global ws
     self.started = True
-    ws.run(self.address)
+    ws.run(self.address, self.port)
 
   def stop(self):
     self._stop.set()
