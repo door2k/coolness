@@ -7,7 +7,7 @@ from pync import Notifier
 import time
 import sys
 import signal
-import vlc_commands
+from vlc_commands import *
 
 
 ws = Flask(__name__)
@@ -66,7 +66,6 @@ def bring_to_front():
 
 @ws.route('/active_window',methods=['GET'])
 def getActiveWindow():
-  time.sleep(3)
   scpt = applescript.AppleScript('''
    tell application "System Events"
         set activeApp to name of first application process whose frontmost is true
@@ -80,25 +79,28 @@ def getActiveWindow():
 
 @ws.route('/send_key',methods=['GET'])
 def getRequestKey():
-  action = request.args.get('action')
-  logger.info(action)
-  os.system('say ' + action)
-  #Notifier.notify(action, execute='say ' + action,open='http://github.com/',activate="org.videolan.vlc", title='Coolness')
-  Notifier.notify(action, execute='say ' + action ,activate="org.videolan.vlc", title='Coolness')
-  #app('System Events').keystroke('N', using=k.command_down)
-  cmd = applescript.AppleScript('''
-          tell application "VLC"
-            activate
-            %s
-          end tell''' % action)
-  # minimize active window
-  #os.system(cmd)
-  vlc = vlc_commands.vlc_command()
-  vlc_action = vlc.get_command(action)
-  print(vlc_action)
-  sc = applescript.AppleScript(vlc_action).run()
-  print(sc)
-  return sc
+  try:
+    action = request.args.get('action')
+    logger.info(action)
+    os.system('say ' + action)
+    #Notifier.notify(action, execute='say ' + action,open='http://github.com/',activate="org.videolan.vlc", title='Coolness')
+    Notifier.notify(action, execute='say ' + action ,activate="org.videolan.vlc", title='Coolness')
+    #app('System Events').keystroke('N', using=k.command_down)
+    cmd = applescript.AppleScript('''
+            tell application "VLC"
+              activate
+              %s
+            end tell''' % action)
+    # minimize active window
+    #os.system(cmd)
+    vlc = vlc_command()
+    vlc_action = vlc.get_command(action)
+    print(vlc_action)
+    sc = applescript.AppleScript(vlc_action).run()
+    print(sc)
+    return sc
+  except Exception,ex:
+    return ex.message
 
 
 myWs = WebServer()
