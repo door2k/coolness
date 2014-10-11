@@ -44,7 +44,6 @@ class beacon : Hashable {
             return self.uuid.hashValue
         }
     }
-    
 }
 
 class beaconHandler : NSObject, CLLocationManagerDelegate {

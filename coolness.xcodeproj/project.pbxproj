@@ -14,7 +14,6 @@
 		A76FAEA819DC863E00D87468 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A76FAEA719DC863E00D87468 /* Images.xcassets */; };
 		A76FAEAB19DC863E00D87468 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A76FAEA919DC863E00D87468 /* LaunchScreen.xib */; };
 		A76FAEB719DC863E00D87468 /* coolnessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FAEB619DC863E00D87468 /* coolnessTests.swift */; };
-		A76FAEC219DC86F700D87468 /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FAEC119DC86F700D87468 /* PlayButton.swift */; };
 		A7A0D3A119E2C8C5008B1176 /* appConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A0D3A019E2C8C5008B1176 /* appConfig.swift */; };
 		A7A0D3A319E2CFD7008B1176 /* network.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A0D3A219E2CFD7008B1176 /* network.swift */; };
 		A7B05CE519E2D91400CE291E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7B05CE419E2D91400CE291E /* CoreLocation.framework */; };
@@ -43,7 +42,6 @@
 		A76FAEB019DC863E00D87468 /* coolnessTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = coolnessTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A76FAEB519DC863E00D87468 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A76FAEB619DC863E00D87468 /* coolnessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = coolnessTests.swift; sourceTree = "<group>"; };
-		A76FAEC119DC86F700D87468 /* PlayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
 		A7A0D3A019E2C8C5008B1176 /* appConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = appConfig.swift; sourceTree = "<group>"; };
 		A7A0D3A219E2CFD7008B1176 /* network.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = network.swift; sourceTree = "<group>"; };
 		A7B05CE419E2D91400CE291E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
@@ -134,7 +132,6 @@
 		A76FAEC019DC86E100D87468 /* FirstView */ = {
 			isa = PBXGroup;
 			children = (
-				A76FAEC119DC86F700D87468 /* PlayButton.swift */,
 			);
 			name = FirstView;
 			sourceTree = "<group>";
@@ -245,7 +242,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A76FAEA319DC863E00D87468 /* SecondViewController.swift in Sources */,
-				A76FAEC219DC86F700D87468 /* PlayButton.swift in Sources */,
 				A76FAE9F19DC863E00D87468 /* AppDelegate.swift in Sources */,
 				A76FAEA119DC863E00D87468 /* FirstViewController.swift in Sources */,
 				A7A0D3A319E2CFD7008B1176 /* network.swift in Sources */,

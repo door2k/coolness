@@ -44,7 +44,7 @@ class SecondViewController: UIViewController {
     func beaconDisappeared(notification: NSNotification) {
         connected = false
         regionLabel.textColor = UIColor.redColor()
-        NSLog("welcome to: \((notification.object as beacon).identifier)")
+        NSLog("by by to: \((notification.object as beacon).identifier)")
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
