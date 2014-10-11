@@ -13,17 +13,32 @@ class network {
     var port: String
     var user: String
     
-    func getURL(command: String) -> NSURL {
+    func getcommandURL(command: String) -> NSURL {
         return NSURL(string: "http://\(server):\(port)/send_key?action=\(command)&user=\(user)")
     }
     
+    func getFGWindowURL() -> NSURL {
+        return NSURL(string: "http://\(server):\(port)/active_window?user=\(user)")
+    }
+    
     func sendCommand(command: String) {
-        let url:NSURL = getURL(command)
+        let url:NSURL = getcommandURL(command)
         
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
             println(NSString(data: data, encoding: NSUTF8StringEncoding))
         }
-        task.resume()
+        task.resume() //a-sync, don't wait for server.
+    }
+    
+    func getActiveWindow() {
+        let url:NSURL = getFGWindowURL()
+        
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
+            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "ActiveWindow", object: NSString(data: data, encoding: NSUTF8StringEncoding)))
+        }
+        
+        task.resume() //a-sync, don't wait for server.
     }
     
     init ()
