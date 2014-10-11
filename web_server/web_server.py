@@ -11,7 +11,7 @@ from vlc_commands import *
 
 
 ws = Flask(__name__)
-
+cur_active_window = ""
 logger = logging.getLogger(__name__)
 class WebServer(threading.Thread):
   def __init__(self, address = "0.0.0.0"):
@@ -19,21 +19,21 @@ class WebServer(threading.Thread):
     logger.info("WebServer instance starting up")
     self._stop = threading.Event()
     self.daemon = True
-    self.started = False
     self.address = address
     self.port = 5555
 
   def run(self):
     global ws
     self.started = True
-    ws.run(self.address, self.port)
+    ws.run(self.address, self.port, use_reloader = False, threaded=True)
 
   def non_threaded_run(self):
     global ws
     self.started = True
-    ws.run(self.address, self.port)
+    ws.run(self.address, self.port, use_reloader = False, threaded=True)
 
   def stop(self):
+    #self.shutdown_server()
     self._stop.set()
     self._Thread__stop()
 
@@ -43,11 +43,14 @@ class WebServer(threading.Thread):
   def signal_handler(self, signal, frame):
     print('You pressed Ctrl+C!')
     self.stop()
-    sys.exit(0)
-    signal.pause()
+    print "Shutting down server, please wait!(or press ctrl c again)"
+    exit(0)
 
-
-
+  def shutdown_server(self):
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
 def bring_to_front():
   action = """tell application "System Events"
   set frontApp to name of first application process whose frontmost is true
@@ -64,18 +67,34 @@ def bring_to_front():
 
         end run"""
 
+
 @ws.route('/active_window',methods=['GET'])
 def getActiveWindow():
-  scpt = applescript.AppleScript('''
-   tell application "System Events"
-        set activeApp to name of first application process whose frontmost is true
-    end tell
+  try:
+    global cur_active_window
 
-    return activeApp
-  ''')
+    scpt = applescript.AppleScript('''
+     tell application "System Events"
+          set activeApp to name of first application process whose frontmost is true
+      end tell
 
-  #print(scpt.run()) #-> 1
-  return scpt.run()
+      return activeApp
+    ''')
+
+    #print(scpt.run()) #-> 1
+    count = 0
+    active_window_res = scpt.run()
+    #print (active_window_res)
+    while cur_active_window == active_window_res and  count < 10:
+      time.sleep(1)
+      active_window_res = scpt.run()
+      #print(active_window_res)
+      count+=1
+
+    cur_active_window = active_window_res
+    return cur_active_window
+  except Exception,ex:
+    return ex.message
 
 @ws.route('/send_key',methods=['GET'])
 def getRequestKey():
@@ -106,3 +125,6 @@ def getRequestKey():
 myWs = WebServer()
 signal.signal(signal.SIGINT,myWs.signal_handler)
 myWs.run()
+
+while True:
+  time.sleep(1)

@@ -9,18 +9,20 @@ class vlc_command:
 		end using terms from""" % self.get_raw_action(command)
 
   def get_raw_action(self, command):
-    if command == "play":
+    if command == "Play":
       return self.play()
-    if command == "stop":
+    if command == "Stop":
       return self.stop()
-    if command == "pause":
+    if command == "Pause":
       return self.pause()
-    if command == "next":
+    if command == "Next":
       return self.next()
-    if command == "previous":
+    if command == "Previous":
       return self.previous()
-    if command == "fullscreen":
+    if command == "Fullscreen":
       return self.fullscreen()
+    return None
+
   def play(self):
     return(
     """
