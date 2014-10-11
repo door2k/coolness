@@ -1,11 +1,9 @@
 import os
 import threading
-import applescript
-import AppKit
+
 from flask import Flask, request, logging
 from pync import Notifier
 import time
-import sys
 import signal
 from vlc_commands import *
 
@@ -112,12 +110,11 @@ def getRequestKey():
             end tell''' % action)
     # minimize active window
     #os.system(cmd)
+
     vlc = vlc_command()
-    vlc_action = vlc.get_command(action)
+    vlc_action = vlc.run_command(action)
     print(vlc_action)
-    sc = applescript.AppleScript(vlc_action).run()
-    print(sc)
-    return sc
+    return vlc_action
   except Exception,ex:
     return ex.message
 
