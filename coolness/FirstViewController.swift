@@ -11,17 +11,27 @@ import UIKit
 class FirstViewController: UIViewController {
 
     
-    @IBOutlet weak var playPauseButton: UIButton!
+    @IBOutlet weak var appName: UILabel!
+    //@IBOutlet weak var playPauseButton: UIButton!
+//    var forgroundApp: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        //var x_origin = self.view.bounds.width/2
-        //let new_rect = CGRect(origin: CGPoint(x: x_origin, y: 417), size: CGSize(width: 50,height: 50))
-        //NSLog("\(new_rect.width)")
-        //self.playPauseButton.alignmentRectForFrame(new_rect)
+
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "activeWindow:", name: "ActiveWindow", object: nil)
+        network().getActiveWindow()
     }
 
+    func activeWindow(notification: NSNotification) {
+        NSLog(notification.object as NSString)
+        dispatch_async(dispatch_get_main_queue(), {
+            
+            // DO SOMETHING ON THE MAINTHREAD
+            self.appName!.text = (notification.object as NSString)
+        })
+        network().getActiveWindow()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
