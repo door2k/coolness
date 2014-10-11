@@ -27,7 +27,7 @@ class network {
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
             println(NSString(data: data, encoding: NSUTF8StringEncoding))
         }
-        task.resume() //a-sync, don't wait for server.
+        task.resume() //a-sync, doesn't wait for server.
     }
     
     func getActiveWindow() {
@@ -38,7 +38,7 @@ class network {
             NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "ActiveWindow", object: NSString(data: data, encoding: NSUTF8StringEncoding)))
         }
         
-        task.resume() //a-sync, don't wait for server.
+        task.resume() //a-sync, doesn't wait for server.
     }
     
     init ()

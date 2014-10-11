@@ -15,9 +15,12 @@ class FirstViewController: UIViewController {
     //@IBOutlet weak var playPauseButton: UIButton!
 //    var forgroundApp: String?
     
+    @IBOutlet weak var appImage: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.appImage.image = UIImage(named: "VLC_icon")
+        self.appImage.viewForBaselineLayout()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "activeWindow:", name: "ActiveWindow", object: nil)
         network().getActiveWindow()
     }
@@ -25,9 +28,10 @@ class FirstViewController: UIViewController {
     func activeWindow(notification: NSNotification) {
         NSLog(notification.object as NSString)
         dispatch_async(dispatch_get_main_queue(), {
-            
-            // DO SOMETHING ON THE MAINTHREAD
-            self.appName!.text = (notification.object as NSString)
+            let appNameFromNotification = (notification.object as? NSString)
+            if  appNameFromNotification != "" {
+                self.appName!.text = appNameFromNotification
+            }
         })
         network().getActiveWindow()
     }
