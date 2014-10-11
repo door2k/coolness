@@ -24,15 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         hBeacon!.add(beacon(uuid: appConfig().params["macmini_uuid"]!, identifier: "Mac mini"))
         hBeacon!.add(beacon(uuid: appConfig().params["macair_uuid"]!, identifier: "Mac air"))
         
-//        if(application.respondsToSelector("registerUserNotificationSettings:")) {
-//            application.registerUserNotificationSettings(
-//                UIUserNotificationSettings(
-//                    forTypes: UIUserNotificationType.Alert | UIUserNotificationType.Sound,
-//                    categories: nil
-//                )
-//            )
-//        }
-        
         hBeacon!.register()
         return true
     }
