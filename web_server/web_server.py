@@ -5,6 +5,8 @@ import AppKit
 from flask import Flask, request, logging
 from pync import Notifier
 import time
+import sys
+import signal
 
 
 ws = Flask(__name__)
@@ -36,6 +38,14 @@ class WebServer(threading.Thread):
 
   def stopped(self):
     return self._stop.isSet()
+
+  def signal_handler(self, signal, frame):
+    print('You pressed Ctrl+C!')
+    self.stop()
+    sys.exit(0)
+    signal.pause()
+
+
 
 def bring_to_front():
   action = """tell application "System Events"
@@ -87,4 +97,5 @@ def getRequestKey():
 
 
 myWs = WebServer()
-myWs.non_threaded_run()
+signal.signal(signal.SIGINT,myWs.signal_handler)
+myWs.run()
