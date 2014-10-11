@@ -7,6 +7,7 @@ from pync import Notifier
 import time
 import sys
 import signal
+import vlc_commands
 
 
 ws = Flask(__name__)
@@ -92,8 +93,12 @@ def getRequestKey():
           end tell''' % action)
   # minimize active window
   #os.system(cmd)
-  print(cmd.run())
-  return "Coolness"
+  vlc = vlc_commands.vlc_command()
+  vlc_action = vlc.get_command(action)
+  print(vlc_action)
+  sc = applescript.AppleScript(vlc_action).run()
+  print(sc)
+  return sc
 
 
 myWs = WebServer()
