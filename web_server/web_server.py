@@ -9,31 +9,57 @@ from vlc_commands import *
 
 
 ws = Flask(__name__)
-cur_active_window = ""
 logger = logging.getLogger(__name__)
 class WebServer(threading.Thread):
   def __init__(self, address = "0.0.0.0"):
     super(WebServer, self).__init__(name="WebServer")
     logger.info("WebServer instance starting up")
     self._stop = threading.Event()
+    self.active_windows_update = threading.Event()
+    self.active_windows_update.clear()
     self.daemon = True
     self.address = address
     self.port = 5555
+    self.cur_active_window = ""
+
+  def start_window_watcher(self):
+    self.window_watcher_thread = threading.Thread(target=self.update_active_window)
+    self.window_watcher_thread.daemon = True
+    self.window_watcher_thread.start()
+
+  def update_active_window(self):
+    print ("window watcher started")
+    scpt = applescript.AppleScript('''
+     tell application "System Events"
+          set activeApp to name of first application process whose frontmost is true
+      end tell
+
+      return activeApp
+    ''')
+    active_window_res = scpt.run()
+    cur_active_window = active_window_res
+    while not self.stopped():
+      time.sleep(1)
+      self.active_windows_update.clear()
+      active_window_res = scpt.run()
+      if self.cur_active_window != active_window_res:
+          self.cur_active_window = active_window_res
+          self.active_windows_update.set()
+    print("window watcher stopped")
 
   def run(self):
     global ws
-    self.started = True
-    ws.run(self.address, self.port, use_reloader = False, threaded=True)
+    ws.run(self.address, self.port)
 
   def non_threaded_run(self):
     global ws
-    self.started = True
-    ws.run(self.address, self.port, use_reloader = False, threaded=True)
+    ws.run(self.address, self.port)
 
   def stop(self):
     #self.shutdown_server()
     self._stop.set()
     self._Thread__stop()
+    self.join()
 
   def stopped(self):
     return self._stop.isSet()
@@ -49,6 +75,7 @@ class WebServer(threading.Thread):
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
+
 def bring_to_front():
   action = """tell application "System Events"
   set frontApp to name of first application process whose frontmost is true
@@ -69,28 +96,9 @@ def bring_to_front():
 @ws.route('/active_window',methods=['GET'])
 def getActiveWindow():
   try:
-    global cur_active_window
-
-    scpt = applescript.AppleScript('''
-     tell application "System Events"
-          set activeApp to name of first application process whose frontmost is true
-      end tell
-
-      return activeApp
-    ''')
-
-    #print(scpt.run()) #-> 1
-    count = 0
-    active_window_res = scpt.run()
-    #print (active_window_res)
-    while cur_active_window == active_window_res and  count < 10:
-      time.sleep(1)
-      active_window_res = scpt.run()
-      #print(active_window_res)
-      count+=1
-
-    cur_active_window = active_window_res
-    return cur_active_window
+    global myWs
+    myWs.active_windows_update.wait()
+    return myWs.cur_active_window
   except Exception,ex:
     return ex.message
 
@@ -118,10 +126,11 @@ def getRequestKey():
   except Exception,ex:
     return ex.message
 
-
 myWs = WebServer()
 signal.signal(signal.SIGINT,myWs.signal_handler)
-myWs.run()
-
+myWs.start_window_watcher()
+myWs.start()
 while True:
   time.sleep(1)
+
+
