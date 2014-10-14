@@ -8,7 +8,6 @@ import time
 import signal
 from vlc_commands import *
 
-
 ws = Flask(__name__)
 logger = logging.getLogger(__name__)
 class WebServer(threading.Thread):
@@ -65,11 +64,13 @@ class WebServer(threading.Thread):
       local myList
       set myList to {}
       repeat with theProcess in processes
-        if not background only of theProcess then
-          tell theProcess
-            set myList to myList & {name}
-          end tell
-        end if
+        try
+          if not background only of theProcess then
+            tell theProcess
+              copy name to end of myList
+            end tell
+          end if
+        end try
       end repeat
       return myList
     end tell''')
@@ -190,7 +191,5 @@ signal.signal(signal.SIGINT,myWs.signal_handler)
 myWs.start_window_watcher()
 
 myWs.start()
-while True:
-  time.sleep(1)
-
+raw_input("Press enter to exit...\n\n")
 
