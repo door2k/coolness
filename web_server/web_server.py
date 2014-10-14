@@ -1,5 +1,6 @@
 import os
 import threading
+import datetime
 
 from flask import Flask, request, logging
 from pync import Notifier
@@ -15,17 +16,27 @@ class WebServer(threading.Thread):
     super(WebServer, self).__init__(name="WebServer")
     logger.info("WebServer instance starting up")
     self._stop = threading.Event()
+
     self.active_windows_update = threading.Event()
+    self.windows_update = threading.Event()
+
     self.active_windows_update.clear()
+    self.windows_update.clear()
+
     self.daemon = True
     self.address = address
     self.port = 5555
     self.cur_active_window = ""
+    self.cur_windows_list = []
+
 
   def start_window_watcher(self):
     self.window_watcher_thread = threading.Thread(target=self.update_active_window)
     self.window_watcher_thread.daemon = True
     self.window_watcher_thread.start()
+    self.windows_list_watcher_thread = threading.Thread(target=self.update_windows)
+    self.windows_list_watcher_thread.daemon = True
+    self.windows_list_watcher_thread.start()
 
   def update_active_window(self):
     print ("window watcher started")
@@ -37,7 +48,7 @@ class WebServer(threading.Thread):
       return activeApp
     ''')
     active_window_res = scpt.run()
-    cur_active_window = active_window_res
+    self.cur_active_window = active_window_res
     while not self.stopped():
       time.sleep(1)
       self.active_windows_update.clear()
@@ -45,13 +56,36 @@ class WebServer(threading.Thread):
       if self.cur_active_window != active_window_res:
           self.cur_active_window = active_window_res
           self.active_windows_update.set()
-    print("window watcher stopped")
+    print("active window watcher stopped")
+
+  def update_windows(self):
+    print ("windows watcher started")
+    scpt = applescript.AppleScript('''
+    tell application "System Events"
+      local myList
+      set myList to {}
+      repeat with theProcess in processes
+        if not background only of theProcess then
+          tell theProcess
+            set myList to myList & {name}
+          end tell
+        end if
+      end repeat
+      return myList
+    end tell''')
+    window_res = scpt.run()
+    self.cur_windows_list = window_res
+    while not self.stopped():
+      time.sleep(3)
+      self.windows_update.clear()
+      window_res = scpt.run()
+      if self.cur_windows_list != window_res:
+          self.cur_windows_list = window_res
+          self.windows_update.set()
+
+    print("windows watcher stopped")
 
   def run(self):
-    global ws
-    ws.run(self.address, self.port)
-
-  def non_threaded_run(self):
     global ws
     ws.run(self.address, self.port)
 
@@ -97,38 +131,64 @@ def bring_to_front():
 def getActiveWindow():
   try:
     global myWs
+    user_window = request.args.get('window')
+
+    #if user_window != myWs.cur_active_window :#or user_window != None:
+    #  return myWs.cur_active_window
+
     myWs.active_windows_update.wait()
     return myWs.cur_active_window
   except Exception,ex:
-    return ex.message
+    print ex.message
 
-@ws.route('/send_key',methods=['GET'])
-def getRequestKey():
+@ws.route('/windows_list',methods=['GET'])
+def getActiveWindowList():
   try:
-    action = request.args.get('action')
-    logger.info(action)
-    os.system('say ' + action)
-    #Notifier.notify(action, execute='say ' + action,open='http://github.com/',activate="org.videolan.vlc", title='Coolness')
-    Notifier.notify(action, execute='say ' + action ,activate="org.videolan.vlc", title='Coolness')
-    #app('System Events').keystroke('N', using=k.command_down)
-    cmd = applescript.AppleScript('''
+    global myWs
+    myWs.windows_update.wait()
+    return "{windows:[" + ','.join(list(myWs.cur_windows_list)) + "]}"
+  except Exception,ex:
+    print ex.message
+
+@ws.route('/activate',methods=['GET'])
+def activate():
+  action = request.args.get('action')
+  scpt = applescript.AppleScript('''
             tell application "VLC"
               activate
               %s
             end tell''' % action)
-    # minimize active window
-    #os.system(cmd)
+  return scpt.run()
 
+
+last_key_sent = datetime.datetime.now()
+last_action = ""
+@ws.route('/send_key',methods=['GET'])
+def getRequestKey():
+  try:
+    global last_key_sent, last_action
+    action = request.args.get('action')
+    print(action)
+    logger.info(action)
+    if (datetime.datetime.now() - last_key_sent).seconds > 5 or last_action != action:
+      os.system('say ' + action)
+      #Notifier.notify(action, execute='say ' + action,open='http://github.com/',activate="org.videolan.vlc", title='Coolness')
+      Notifier.notify(action, execute='say ' + action ,activate="org.videolan.vlc", title='Coolness')
+      #app('System Events').keystroke('N', using=k.command_down)
+      last_key_sent = datetime.datetime.now()
+    last_action = action
     vlc = vlc_command()
     vlc_action = vlc.run_command(action)
     print(vlc_action)
     return vlc_action
   except Exception,ex:
+    print ex.message
     return ex.message
 
 myWs = WebServer()
 signal.signal(signal.SIGINT,myWs.signal_handler)
 myWs.start_window_watcher()
+
 myWs.start()
 while True:
   time.sleep(1)
