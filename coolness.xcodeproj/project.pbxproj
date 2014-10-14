@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A728CB5C19EAECBE00A4A5DA /* CNClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = A728CB5B19EAECBE00A4A5DA /* CNClasses.swift */; };
+		A728CB5E19EBD45200A4A5DA /* AppListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A728CB5D19EBD45200A4A5DA /* AppListViewController.swift */; };
 		A76FAE9F19DC863E00D87468 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FAE9E19DC863E00D87468 /* AppDelegate.swift */; };
 		A76FAEA119DC863E00D87468 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FAEA019DC863E00D87468 /* FirstViewController.swift */; };
 		A76FAEA319DC863E00D87468 /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FAEA219DC863E00D87468 /* SecondViewController.swift */; };
@@ -31,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A728CB5B19EAECBE00A4A5DA /* CNClasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CNClasses.swift; sourceTree = "<group>"; };
+		A728CB5D19EBD45200A4A5DA /* AppListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppListViewController.swift; sourceTree = "<group>"; };
 		A76FAE9919DC863E00D87468 /* coolness.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = coolness.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A76FAE9D19DC863E00D87468 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A76FAE9E19DC863E00D87468 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -99,6 +103,8 @@
 				A76FAEA919DC863E00D87468 /* LaunchScreen.xib */,
 				A7A0D3A219E2CFD7008B1176 /* network.swift */,
 				A7B05CE619E2ECA900CE291E /* beacon.swift */,
+				A728CB5B19EAECBE00A4A5DA /* CNClasses.swift */,
+				A728CB5D19EBD45200A4A5DA /* AppListViewController.swift */,
 				A76FAE9C19DC863E00D87468 /* Supporting Files */,
 			);
 			path = coolness;
@@ -185,6 +191,7 @@
 				TargetAttributes = {
 					A76FAE9819DC863E00D87468 = {
 						CreatedOnToolsVersion = 6.0.1;
+						DevelopmentTeam = MYE6K37Z4V;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -242,11 +249,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A76FAEA319DC863E00D87468 /* SecondViewController.swift in Sources */,
+				A728CB5C19EAECBE00A4A5DA /* CNClasses.swift in Sources */,
 				A76FAE9F19DC863E00D87468 /* AppDelegate.swift in Sources */,
 				A76FAEA119DC863E00D87468 /* FirstViewController.swift in Sources */,
 				A7A0D3A319E2CFD7008B1176 /* network.swift in Sources */,
 				A7B05CE719E2ECA900CE291E /* beacon.swift in Sources */,
 				A7A0D3A119E2C8C5008B1176 /* appConfig.swift in Sources */,
+				A728CB5E19EBD45200A4A5DA /* AppListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,9 +380,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = coolness/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -381,9 +393,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = coolness/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

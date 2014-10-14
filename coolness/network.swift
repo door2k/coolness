@@ -23,22 +23,37 @@ class network {
     
     func sendCommand(command: String) {
         let url:NSURL = getcommandURL(command)
-        
+//        println("sending command: \(url)")
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
-            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
         }
         task.resume() //a-sync, doesn't wait for server.
     }
     
     func getActiveWindow() {
         let url:NSURL = getFGWindowURL()
-        
+//        println("getting FG window command: \(url)")
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
-            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
             NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "ActiveWindow", object: NSString(data: data, encoding: NSUTF8StringEncoding)))
         }
         
         task.resume() //a-sync, doesn't wait for server.
+    }
+    
+    func getVolume() {
+        let url:NSURL = getcommandURL("get_volume")
+        
+        let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
+//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "VolumeUpdate", object: NSString(data: data, encoding: NSUTF8StringEncoding)))
+        }
+        
+        task.resume() //a-sync, doesn't wait for server.
+    }
+
+    func setVolume (volume: Float) {
+        sendCommand("set_volume&Volume=\(volume)")
     }
     
     init ()

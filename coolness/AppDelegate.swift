@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var hBeacon: beaconHandler?
     var locationManager: CLLocationManager?
 
+    var appsDictionary: [String:CNRemoteApp]?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
        
