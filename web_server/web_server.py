@@ -88,7 +88,7 @@ class WebServer(threading.Thread):
 
   def run(self):
     global ws
-    ws.run(self.address, self.port)
+    ws.run(self.address, self.port, threaded=True)
 
   def stop(self):
     #self.shutdown_server()
@@ -110,22 +110,6 @@ class WebServer(threading.Thread):
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
-
-def bring_to_front():
-  action = """tell application "System Events"
-  set frontApp to name of first application process whose frontmost is true
-  end tell
-  tell application frontApp
-  if the (count of windows) is not 0 then
-    set window_name to name of front window
-  end if
-  end tell"""
-  sample = """property _count : 0
-
-        on run
-                set _count to _count + 1
-
-        end run"""
 
 
 @ws.route('/active_window',methods=['GET'])
@@ -155,19 +139,20 @@ def getActiveWindowList():
 def activate():
   try:
     action = request.args.get('action')
-    scpt = applescript.AppleScript('''
-    tell application "System Events"
-      tell process "%s"
-        try
-          activate
+    cmd = ('''
+    try
+      tell application "System Events"
+        tell process "%s"
           set frontmost to true
-          return true
-        end try
+        end tell
       end tell
-    end tell
-    return false''' % action)
-
-    return scpt.run()
+    on error errMsg
+      return errMsg
+    end try
+    return true''' % action)
+    print cmd
+    scpt = applescript.AppleScript(cmd).run()
+    return scpt
   except Exception,ex:
     print ex.message
 
