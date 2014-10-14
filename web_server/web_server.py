@@ -134,8 +134,8 @@ def getActiveWindow():
     global myWs
     user_window = request.args.get('window')
 
-    #if user_window != myWs.cur_active_window :#or user_window != None:
-    #  return myWs.cur_active_window
+    if user_window != myWs.cur_active_window :#or user_window != None:
+      return myWs.cur_active_window
 
     myWs.active_windows_update.wait()
     return myWs.cur_active_window
@@ -153,13 +153,23 @@ def getActiveWindowList():
 
 @ws.route('/activate',methods=['GET'])
 def activate():
-  action = request.args.get('action')
-  scpt = applescript.AppleScript('''
-            tell application "VLC"
-              activate
-              %s
-            end tell''' % action)
-  return scpt.run()
+  try:
+    action = request.args.get('action')
+    scpt = applescript.AppleScript('''
+    tell application "System Events"
+      tell process "%s"
+        try
+          activate
+          set frontmost to true
+          return true
+        end try
+      end tell
+    end tell
+    return false''' % action)
+
+    return scpt.run()
+  except Exception,ex:
+    print ex.message
 
 
 last_key_sent = datetime.datetime.now()
