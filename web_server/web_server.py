@@ -139,8 +139,8 @@ def getActiveWindowList():
     if not myWs.users.has_key(user_name):
       myWs.users[user_name] = User(user_name)
 
-    myWs.users[user_name].windows_update.wait()
-    myWs.users[user_name].windows_update.clear()
+    #myWs.users[user_name].windows_update.wait()
+    #myWs.users[user_name].windows_update.clear()
     return "{windows:[" + ','.join(list(myWs.cur_windows_list)) + "]}"
   except Exception,ex:
     print ex.message
