@@ -106,11 +106,14 @@ def getActiveUsers():
     global myWs
     res = ""
     for user in myWs.users.values():
-      res +=  "{" + user.name + "," + str(user.last_time) + "}"
-
-    return "{" + res + "}"
+      res +=  "{\"" + user.name + "\":\"" + str(user.last_time) + "\"}"
+    if res == "":
+      res = "\"\""
+    
+    return "{\"users\":" + str(res) + "}"
   except Exception,ex:
     print ex.message
+    return "{\"users\":\"\"}"
 
 @ws.route('/active_window',methods=['GET'])
 def getActiveWindow():
@@ -118,11 +121,12 @@ def getActiveWindow():
     global myWs
     user_window = request.args.get('window')
     user_name = request.args.get('user')
+    if not myWs.users.has_key(user_name):
+      myWs.users[user_name] = User(user_name)
+
     if user_window != myWs.cur_active_window :#or user_window != None:
       return str(myWs.cur_active_window)
 
-    if not myWs.users.has_key(user_name):
-      myWs.users[user_name] = User(user_name)
 
     myWs.users[user_name].active_windows_update.wait()
     myWs.users[user_name].active_windows_update.clear()
@@ -141,7 +145,10 @@ def getActiveWindowList():
 
     #myWs.users[user_name].windows_update.wait()
     #myWs.users[user_name].windows_update.clear()
-    return "{windows:[" + ','.join(list(myWs.cur_windows_list)) + "]}"
+    myList = []
+    for app in myWs.cur_windows_list:
+      myList.append("\"" + app + "\"")
+    return "{\"windows\":[" + ','.join(list(myList)) + "]}"
   except Exception,ex:
     print ex.message
 
