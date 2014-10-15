@@ -38,11 +38,18 @@ class CNAppsManager : NSObject {
     func addApp(name: String) {
         switch name {
             case "VLC":
-                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage (named: "VLC_Icon"), appRemote: CNRemote(app: name))
+                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage (named: "VLC_Icon"), appRemote: CNRemote(app: name, appCapabilities: [ CNAppCapabilities.Play,
+                                                                      CNAppCapabilities.Pause,
+                                                                      CNAppCapabilities.FullScreen,
+                                                                      CNAppCapabilities.SetActive,
+                                                                      CNAppCapabilities.SetVolume,
+                                                                      CNAppCapabilities.IsPlaying]))
             case "Google Chrome":
-                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage (named: "Google_Chrome_Icon"), appRemote: CNRemote(app: name))
+                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage (named: "Google_Chrome_Icon"), appRemote: CNRemote(app: name, appCapabilities: [ CNAppCapabilities.FullScreen,
+                                                                      CNAppCapabilities.SetActive]))
             default:
-                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage(named: "None_Icon"), appRemote: CNRemote(app: name))
+                CNAppsManager.sharedInstance.apps[name] = CNRemoteApp(name: name, icon: UIImage(named: "None_Icon"), appRemote: CNRemote(app: name, appCapabilities: [ CNAppCapabilities.FullScreen,
+                                                                      CNAppCapabilities.SetActive]))
         }
     }
     

@@ -12,8 +12,9 @@ class FirstViewController: UIViewController {
 
     
     @IBOutlet weak var appName: UILabel!
-    //@IBOutlet weak var playPauseButton: UIButton!
+    @IBOutlet weak var playPauseButton: UIButton!
 //    var forgroundApp: String?
+    @IBOutlet weak var fullScreenButton: UIButton!
     
     @IBOutlet weak var appImage: UIImageView!
     
@@ -25,14 +26,22 @@ class FirstViewController: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "volumeUpdate:", name: "VolumeUpdate", object: nil)
     }
 
+    var activeApp: CNRemoteApp? = nil
+    
     func activeApp(notification: NSNotification) {
         let app = (notification.object as? CNRemoteApp)
-
+        
+        activeApp = app
+        
         dispatch_async(dispatch_get_main_queue(), {
             self.appName.text = app?.name
             self.appImage.image = app?.icon
             self.appImage.contentMode = UIViewContentMode.ScaleAspectFit;
             self.appImage.clipsToBounds = true;
+            
+            self.playPauseButton.enabled = app!.remote.supports(CNAppCapabilities.Play)
+            
+            self.fullScreenButton.enabled = app!.remote.supports(CNAppCapabilities.FullScreen)
         })
         
     }
@@ -71,6 +80,24 @@ class FirstViewController: UIViewController {
         return
     }
     
+    var isFullScreen: Bool = false
+    
+    @IBAction func fullScreenClicked(sender: AnyObject) {
+        if (activeApp == nil) {
+            return
+        }
+        
+        if (isFullScreen) {
+            (sender as UIButton).setImage(UIImage(named: "toFullScreen"), forState: .Normal)
+            isFullScreen = false
+        } else {
+            (sender as UIButton).setImage(UIImage(named: "fromFullScreen"), forState: .Normal)
+            isFullScreen = true
+        }
+        activeApp!.remote.useCapability(CNAppCapabilities.FullScreen)
+        return
+
+    }
     @IBAction func sliderChanged(sender: AnyObject) {
         network().setVolume(self.volumeSlider.value)
         NSLog("volume: \(self.volumeSlider.value)")
