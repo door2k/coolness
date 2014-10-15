@@ -119,8 +119,8 @@ def getActiveUsers():
 def getActiveWindow():
   try:
     global myWs
-    user_window = request.args.get('window')
-    user_name = request.args.get('user')
+    user_window = request.args.get('Window')
+    user_name = request.args.get('User')
     if not myWs.users.has_key(user_name):
       myWs.users[user_name] = User(user_name)
 
