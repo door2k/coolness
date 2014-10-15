@@ -26,6 +26,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         hBeacon!.add(beacon(uuid: appConfig().params["macair_uuid"]!, identifier: "Mac air"))
         
         hBeacon!.register()
+        
+        CNAppsManager.sharedInstance
+        
         return true
     }
 

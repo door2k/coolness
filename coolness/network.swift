@@ -17,10 +17,6 @@ class network {
         return NSURL(string: "http://\(server):\(port)/send_key?action=\(command)&user=\(user)")
     }
     
-    func getFGWindowURL() -> NSURL {
-        return NSURL(string: "http://\(server):\(port)/active_window?user=\(user)")
-    }
-    
     func sendCommand(command: String) {
         let url:NSURL = getcommandURL(command)
 //        println("sending command: \(url)")
@@ -30,11 +26,15 @@ class network {
         task.resume() //a-sync, doesn't wait for server.
     }
     
-    func getActiveWindow() {
-        let url:NSURL = getFGWindowURL()
-//        println("getting FG window command: \(url)")
+    func getActiveWindow(currentAppName: String) {
+        let urlUnsurpressedString: NSString = "http://\(server):\(port)/active_window?window=\(currentAppName)&user=\(user)"
+//        NSLog(urlUnsurpressedString)
+        let urlString: NSString = urlUnsurpressedString.stringByReplacingOccurrencesOfString(" ", withString: "%20")
+//        NSLog(urlString)
+        let url:NSURL = NSURL(string: urlString)
+//        NSLog("\(url.absoluteString)")
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
-//            println(NSString(data: data, encoding: NSUTF8StringEncoding))
+            NSLog(NSString(data: data, encoding: NSUTF8StringEncoding))
             NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "ActiveWindow", object: NSString(data: data, encoding: NSUTF8StringEncoding)))
         }
         
@@ -42,6 +42,9 @@ class network {
     }
     
     func getVolume() {
+        NSLog("Tried to get volume. blocked.")
+        return
+        
         let url:NSURL = getcommandURL("get_volume")
         
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
@@ -53,6 +56,10 @@ class network {
     }
 
     func setVolume (volume: Float) {
+        
+        NSLog("Tried to set volume. blocked.")
+        return
+        
         sendCommand("set_volume&Volume=\(volume)")
     }
     

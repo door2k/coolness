@@ -21,31 +21,20 @@ class FirstViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "activeWindow:", name: "ActiveWindow", object: nil)
-        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "activeApp:", name: "ActiveApp", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "volumeUpdate:", name: "VolumeUpdate", object: nil)
-        network().getActiveWindow()
         //network().getVolume()
     }
 
-    func activeWindow(notification: NSNotification) {
-//        NSLog(notification.object as NSString)
+    func activeApp(notification: NSNotification) {
+        let app = (notification.object as? CNRemoteApp)
         dispatch_async(dispatch_get_main_queue(), {
-            let appNameFromNotification = (notification.object as? NSString)
-            if  appNameFromNotification != "" {
-                self.appName!.text = appNameFromNotification
-            }
-            if appNameFromNotification == "VLC" {
-                self.appImage.image = UIImage(named: "VLC_icon.png")
-                
-                self.appImage.contentMode = UIViewContentMode.ScaleAspectFit;
-                self.appImage.clipsToBounds = true;
-            } else {
-                self.appImage.image = nil
-            }
+            self.appName.text = app?.name
+            self.appImage.image = app?.icon
+            self.appImage.contentMode = UIViewContentMode.ScaleAspectFit;
+            self.appImage.clipsToBounds = true;
         })
-        network().getActiveWindow()
+        
     }
     
     func volumeUpdate(notification: NSNotification) {
