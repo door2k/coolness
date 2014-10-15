@@ -65,11 +65,11 @@ on VLC_GetVolume()
 	end using terms from
 end VLC_GetVolume
 
-on VLC_SetVolume()
+on VLC_SetVolume(new_volume)
 	using terms from application "VLC"
 		
 		tell application "VLC"
-			set audio volume to 11
+			set audio volume to new_volume
 			return audio volume
 		end tell
 	end using terms from

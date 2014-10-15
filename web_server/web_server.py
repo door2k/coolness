@@ -11,18 +11,23 @@ from MyAppleScript import *
 
 ws = Flask(__name__)
 logger = logging.getLogger(__name__)
+
+class User:
+  def __init__(self, name):
+    self.name = name
+    self.active_windows_update = threading.Event()
+    self.windows_update = threading.Event()
+    self.last_time = datetime.datetime.now()
+
+
+
 class WebServer(threading.Thread):
   def __init__(self, address = "0.0.0.0"):
     super(WebServer, self).__init__(name="WebServer")
     logger.info("WebServer instance starting up")
     self._stop = threading.Event()
 
-    self.active_windows_update = threading.Event()
-    self.windows_update = threading.Event()
-
-    self.active_windows_update.clear()
-    self.windows_update.clear()
-
+    self.users = {}
     self.daemon = True
     self.address = address
     self.port = 5555
@@ -45,11 +50,11 @@ class WebServer(threading.Thread):
     self.cur_active_window = active_window_res
     while not self.stopped():
       time.sleep(1)
-      self.active_windows_update.clear()
       active_window_res = self.myAppleScript.AppleScript.call('GetFrontMost')
       if self.cur_active_window != active_window_res:
           self.cur_active_window = active_window_res
-          self.active_windows_update.set()
+          for key, value in self.users.iteritems():
+            value.active_windows_update.set()
     print("active window watcher stopped")
 
   def update_windows(self):
@@ -58,11 +63,11 @@ class WebServer(threading.Thread):
     self.cur_windows_list = window_res
     while not self.stopped():
       time.sleep(3)
-      self.windows_update.clear()
       window_res = self.myAppleScript.AppleScript.call('GetWindowsList')
       if self.cur_windows_list != window_res:
           self.cur_windows_list = window_res
-          self.windows_update.set()
+          for key, value in self.users.iteritems():
+            value.windows_update.set()
 
     print("windows watcher stopped")
 
@@ -81,6 +86,10 @@ class WebServer(threading.Thread):
 
   def signal_handler(self, signal, frame):
     print('You pressed Ctrl+C!')
+    for key, value in self.users.iteritems():
+      value.active_windows_update.set()
+      value.windows_update.set()
+
     self.stop()
     print "Shutting down server, please wait!(or press ctrl c again)"
     exit(0)
@@ -91,17 +100,33 @@ class WebServer(threading.Thread):
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
+@ws.route('/active_users',methods=['GET'])
+def getActiveUsers():
+  try:
+    global myWs
+    res = ""
+    for user in myWs.users.values():
+      res +=  "{" + user.name + "," + str(user.last_time) + "}"
+
+    return "{" + res + "}"
+  except Exception,ex:
+    print ex.message
 
 @ws.route('/active_window',methods=['GET'])
 def getActiveWindow():
   try:
     global myWs
     user_window = request.args.get('window')
-
+    user_name = request.args.get('user')
     if user_window != myWs.cur_active_window :#or user_window != None:
       return str(myWs.cur_active_window)
 
-    myWs.active_windows_update.wait()
+    if not myWs.users.has_key(user_name):
+      myWs.users[user_name] = User(user_name)
+
+    myWs.users[user_name].active_windows_update.wait()
+    myWs.users[user_name].active_windows_update.clear()
+    myWs.users[user_name].last_time =  datetime.datetime.now()
     return str(myWs.cur_active_window)
   except Exception,ex:
     print ex.message
@@ -110,7 +135,12 @@ def getActiveWindow():
 def getActiveWindowList():
   try:
     global myWs
-    myWs.windows_update.wait()
+    user_name = request.args.get('user')
+    if not myWs.users.has_key(user_name):
+      myWs.users[user_name] = User(user_name)
+
+    myWs.users[user_name].windows_update.wait()
+    myWs.users[user_name].windows_update.clear()
     return "{windows:[" + ','.join(list(myWs.cur_windows_list)) + "]}"
   except Exception,ex:
     print ex.message
@@ -118,21 +148,10 @@ def getActiveWindowList():
 @ws.route('/activate',methods=['GET'])
 def activate():
   try:
-    action = request.args.get('action')
-    cmd = ('''
-    try
-      tell application "System Events"
-        tell process "%s"
-          set frontmost to true
-        end tell
-      end tell
-    on error errMsg
-      return errMsg
-    end try
-    return true''' % action)
-    print cmd
-    scpt = applescript.AppleScript(cmd).run()
-    return scpt
+    window = request.args.get('window')
+    global myWs
+    active_window_res = myWs.myAppleScript.AppleScript.call('Activate',window)
+    return active_window_res
   except Exception,ex:
     print ex.message
 
@@ -166,5 +185,5 @@ signal.signal(signal.SIGINT,myWs.signal_handler)
 myWs.start_window_watcher()
 
 myWs.start()
-raw_input("Press enter to exit...\n\n")
-
+while True:
+  time.sleep(1)

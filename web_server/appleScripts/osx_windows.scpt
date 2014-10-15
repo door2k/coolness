@@ -22,3 +22,16 @@ on GetWindowsList()
 		return myList
 	end tell
 end GetWindowsList
+
+on activate(window)
+	try
+		tell application "System Events"
+			tell process window
+				set frontmost to true
+			end tell
+		end tell
+	on error errMsg
+		return errMsg
+	end try
+	return true
+end activate
