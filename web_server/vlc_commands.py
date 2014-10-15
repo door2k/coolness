@@ -9,11 +9,11 @@ class vlc_command:
   def run_command(self, action):
     if action == "SetVolume":
       volume = request.args.get('Volume')
-      res = self.get_raw_action2(action, float(volume) * 256)
-      return str(float(float(res) / 256))
+      res = self.get_raw_action2(action, float(volume) * 320)
+      return str(float(float(res) / 320))
     elif action == "GetVolume":
       res = self.get_raw_action(action)
-      return str(float(float(res) / 256))
+      return str(float(float(res) / 320))
     else:
       res = self.get_raw_action(action)
 

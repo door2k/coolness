@@ -58,7 +58,6 @@ end VLC_FullScreen
 
 on VLC_GetVolume()
 	using terms from application "VLC"
-		
 		tell application "VLC"
 			return audio volume
 		end tell
@@ -67,7 +66,6 @@ end VLC_GetVolume
 
 on VLC_SetVolume(new_volume)
 	using terms from application "VLC"
-		
 		tell application "VLC"
 			set audio volume to new_volume
 			return audio volume
