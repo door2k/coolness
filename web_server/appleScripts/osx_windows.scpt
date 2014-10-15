@@ -23,12 +23,12 @@ on GetWindowsList()
 	end tell
 end GetWindowsList
 
-on activate(window)
-	try
-		tell application "System Events"
-			tell process window
-				set frontmost to true
-			end tell
+on ActivateApp(app_name)
+    try
+		set ap to app_name as string
+		tell application ap
+			activate
+			set frontmost to true
 		end tell
 	on error errMsg
 		return errMsg

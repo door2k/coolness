@@ -150,8 +150,8 @@ def activate():
   try:
     window = request.args.get('window')
     global myWs
-    active_window_res = myWs.myAppleScript.AppleScript.call('Activate',window)
-    return active_window_res
+    active_window_res = myWs.myAppleScript.AppleScript.call('ActivateApp',window)
+    return str(active_window_res)
   except Exception,ex:
     print ex.message
 
