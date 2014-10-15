@@ -109,7 +109,7 @@ def getActiveUsers():
       res +=  "{\"" + user.name + "\":\"" + str(user.last_time) + "\"}"
     if res == "":
       res = "\"\""
-    
+
     return "{\"users\":" + str(res) + "}"
   except Exception,ex:
     print ex.message
@@ -139,7 +139,7 @@ def getActiveWindow():
 def getActiveWindowList():
   try:
     global myWs
-    user_name = request.args.get('user')
+    user_name = request.args.get('User')
     if not myWs.users.has_key(user_name):
       myWs.users[user_name] = User(user_name)
 
@@ -155,7 +155,7 @@ def getActiveWindowList():
 @ws.route('/activate',methods=['GET'])
 def activate():
   try:
-    window = request.args.get('window')
+    window = request.args.get('Window')
     global myWs
     active_window_res = myWs.myAppleScript.AppleScript.call('ActivateApp',window)
     return str(active_window_res)
@@ -169,14 +169,12 @@ last_action = ""
 def getRequestKey():
   try:
     global last_key_sent, last_action, myWs
-    action = request.args.get('action')
+    action = request.args.get('Action')
     print(action)
     logger.info(action)
-    if (datetime.datetime.now() - last_key_sent).seconds > 5 or last_action != action:
-      os.system('say ' + action)
-      #Notifier.notify(action, execute='say ' + action,open='http://github.com/',activate="org.videolan.vlc", title='Coolness')
+    if (datetime.datetime.now() - last_key_sent).seconds > 5 or last_action != action and action != "SetVolume" and action != "GetVolume":
+      #os.system('say ' + action)
       Notifier.notify(action, execute='say ' + action ,activate="org.videolan.vlc", title='Coolness')
-      #app('System Events').keystroke('N', using=k.command_down)
       last_key_sent = datetime.datetime.now()
     last_action = action
     vlc_action = myWs.vlc.run_command(action)
