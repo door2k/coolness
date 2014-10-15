@@ -7,6 +7,7 @@ from pync import Notifier
 import time
 import signal
 from vlc_commands import *
+from MyAppleScript import *
 
 ws = Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -27,6 +28,7 @@ class WebServer(threading.Thread):
     self.port = 5555
     self.cur_active_window = ""
     self.cur_windows_list = []
+    self.myAppleScript = MyAppleScript()
 
 
   def start_window_watcher(self):
@@ -39,19 +41,12 @@ class WebServer(threading.Thread):
 
   def update_active_window(self):
     print ("window watcher started")
-    scpt = applescript.AppleScript('''
-     tell application "System Events"
-          set activeApp to name of first application process whose frontmost is true
-      end tell
-
-      return activeApp
-    ''')
-    active_window_res = scpt.run()
+    active_window_res = self.myAppleScript.AppleScript.call('GetFrontMost')
     self.cur_active_window = active_window_res
     while not self.stopped():
       time.sleep(1)
       self.active_windows_update.clear()
-      active_window_res = scpt.run()
+      active_window_res = self.myAppleScript.AppleScript.call('GetFrontMost')
       if self.cur_active_window != active_window_res:
           self.cur_active_window = active_window_res
           self.active_windows_update.set()
@@ -59,27 +54,12 @@ class WebServer(threading.Thread):
 
   def update_windows(self):
     print ("windows watcher started")
-    scpt = applescript.AppleScript('''
-    tell application "System Events"
-      local myList
-      set myList to {}
-      repeat with theProcess in processes
-        try
-          if not background only of theProcess then
-            tell theProcess
-              copy name to end of myList
-            end tell
-          end if
-        end try
-      end repeat
-      return myList
-    end tell''')
-    window_res = scpt.run()
+    window_res = self.myAppleScript.AppleScript.call('GetWindowsList')
     self.cur_windows_list = window_res
     while not self.stopped():
       time.sleep(3)
       self.windows_update.clear()
-      window_res = scpt.run()
+      window_res = self.myAppleScript.AppleScript.call('GetWindowsList')
       if self.cur_windows_list != window_res:
           self.cur_windows_list = window_res
           self.windows_update.set()
@@ -119,10 +99,10 @@ def getActiveWindow():
     user_window = request.args.get('window')
 
     if user_window != myWs.cur_active_window :#or user_window != None:
-      return myWs.cur_active_window
+      return str(myWs.cur_active_window)
 
     myWs.active_windows_update.wait()
-    return myWs.cur_active_window
+    return str(myWs.cur_active_window)
   except Exception,ex:
     print ex.message
 
