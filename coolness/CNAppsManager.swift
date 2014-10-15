@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+var _internal_lock: Bool = true
+
 class CNAppsManager : NSObject {
 
     var apps: [String : CNRemoteApp] = [:]
@@ -22,10 +24,13 @@ class CNAppsManager : NSObject {
         }
         
         if Singleton.instance.initializing {
+            Singleton.instance.initializing = false
             NSNotificationCenter.defaultCenter().addObserver(Singleton.instance, selector: "activeWindow:", name: "ActiveWindow", object: nil)
+            NSNotificationCenter.defaultCenter().addObserver(Singleton.instance, selector: "appListUpdated:", name: "AppsList", object: nil)
             network().getActiveWindow("None")
+            network().getAppList()
             }
-        Singleton.instance.initializing = false
+    
         return Singleton.instance
     }
     
@@ -54,6 +59,18 @@ class CNAppsManager : NSObject {
         network().getActiveWindow(CNAppsManager.sharedInstance.activeApp!)
     }
 
+    func appListUpdated(notification: NSNotification) {
+        let appsDictionary = notification.object as [String:[String]]
+        let appsList: [String] = appsDictionary["windows"]!
+        for appName in appsList {
+            NSLog("Yet another app: \(appName)")
+            CNAppsManager.sharedInstance.addApp(appName)
+        }
+    }
+    
+    func setActiveApp (name: String) {
+        network().setActiveApp(name)
+    }
     
     var activeApp:String?
         {

@@ -9,14 +9,15 @@
 import Foundation
 import UIKit
 
-class AppListViewController : UIViewController, UITableViewDataSource  {
+class AppListViewController : UIViewController, UITableViewDataSource, UITableViewDelegate  {
     
     @IBOutlet weak var appsTable: UITableView!
     
-    let appManager: CNAppsManager = CNAppsManager.sharedInstance
+    var appManager: CNAppsManager?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.appManager = CNAppsManager.sharedInstance
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "activeApp:", name: "ActiveApp", object: nil)
     }
 
@@ -29,7 +30,7 @@ class AppListViewController : UIViewController, UITableViewDataSource  {
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        appKeys = Array(appManager.apps.keys)
+        appKeys = Array(appManager!.apps.keys)
         return appKeys.count
     }
     
@@ -42,18 +43,24 @@ class AppListViewController : UIViewController, UITableViewDataSource  {
         
         var appName = appKeys[indexPath.row]
         
-        if appName == appManager.activeApp! {
+        if appName == appManager!.activeApp! {
             cell!.textLabel!.textColor = UIColor(red: 0.0, green: 0.5, blue: 0.1, alpha: 1.0)
         } else {
             cell!.textLabel!.textColor = UIColor.blackColor()
         }
 
-        cell!.imageView!.image = appManager.apps[appName]!.icon
+        cell!.imageView!.image = appManager!.apps[appName]!.icon
         cell!.imageView!.contentMode = UIViewContentMode.ScaleAspectFit
         cell!.imageView!.clipsToBounds = true;
-        cell!.textLabel?.text = appManager.apps[appName]!.name
+        cell!.textLabel?.text = appManager!.apps[appName]!.name
         
         return cell!
     }
+    
+    func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
+        self.appManager?.setActiveApp(appKeys[indexPath.row])
+    }
+    
+    
     
 }
