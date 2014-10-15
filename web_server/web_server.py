@@ -7,7 +7,6 @@ from pync import Notifier
 import time
 import signal
 from vlc_commands import *
-from MyAppleScript import *
 
 ws = Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -34,6 +33,7 @@ class WebServer(threading.Thread):
     self.cur_active_window = ""
     self.cur_windows_list = []
     self.myAppleScript = MyAppleScript()
+    self.vlc = vlc_command(self.myAppleScript)
 
 
   def start_window_watcher(self):
@@ -161,7 +161,7 @@ last_action = ""
 @ws.route('/send_key',methods=['GET'])
 def getRequestKey():
   try:
-    global last_key_sent, last_action
+    global last_key_sent, last_action, myWs
     action = request.args.get('action')
     print(action)
     logger.info(action)
@@ -172,8 +172,7 @@ def getRequestKey():
       #app('System Events').keystroke('N', using=k.command_down)
       last_key_sent = datetime.datetime.now()
     last_action = action
-    vlc = vlc_command()
-    vlc_action = vlc.run_command(action)
+    vlc_action = myWs.vlc.run_command(action)
     print(vlc_action)
     return vlc_action
   except Exception,ex:

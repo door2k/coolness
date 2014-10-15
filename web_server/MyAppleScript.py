@@ -8,12 +8,15 @@ class MyAppleScript:
     return cls._instance
 
   def __init__(self):
-    script = ""
-    cur_file_path = os.path.realpath(__file__)
-    cur_dir_path = os.path.dirname(cur_file_path)
-    apple_scripts_dir = os.path.join(cur_dir_path,"appleScripts")
-    for file_name in os.listdir(apple_scripts_dir):
-      full_file_path = os.path.join(apple_scripts_dir, file_name)
-      with open (full_file_path, "r") as myfile:
-        script = script + myfile.read()
-    self.AppleScript = applescript.AppleScript(script)
+    try:
+      script = ""
+      cur_file_path = os.path.realpath(__file__)
+      cur_dir_path = os.path.dirname(cur_file_path)
+      apple_scripts_dir = os.path.join(cur_dir_path,"appleScripts")
+      for file_name in os.listdir(apple_scripts_dir):
+        full_file_path = os.path.join(apple_scripts_dir, file_name)
+        with open (full_file_path, "r") as myfile:
+          script = script + myfile.read()
+      self.AppleScript = applescript.AppleScript(script)
+    except Exception, ex:
+      print ex.message
