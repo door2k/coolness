@@ -10,6 +10,16 @@ on VLC_Play()
 	end using terms from
 end VLC_Play
 
+on VLC_IsPlaying()
+	using terms from application "VLC"
+		if playing of application "VLC" then
+			return "Playing"
+		else
+			return "Paused"
+		end if
+	end using terms from
+end VLC_GetState
+
 on VLC_Pause()
 	using terms from application "VLC"
 		if playing of application "VLC" then
