@@ -34,6 +34,12 @@ class CNAppsManager : NSObject {
         return Singleton.instance
     }
     
+    func reset() {
+        apps = [:]
+        activeApp = nil
+        network().getActiveWindow("None")
+        network().getAppList()
+    }
     
     func addApp(name: String) {
         switch name {
@@ -63,7 +69,13 @@ class CNAppsManager : NSObject {
         
         CNAppsManager.sharedInstance.activeApp = name
         NSNotificationCenter.defaultCenter().postNotification(NSNotification(name: "ActiveApp", object: CNAppsManager.sharedInstance.apps[name]))
-        network().getActiveWindow(CNAppsManager.sharedInstance.activeApp!)
+        
+        // This is a hack to make sure "reset" was not called between the previous lines to the following.
+        var activeAppName:String? = CNAppsManager.sharedInstance.activeApp
+        if (activeAppName == nil) {
+            activeAppName = "None"
+        }
+        network().getActiveWindow(activeAppName!)
     }
 
     func appListUpdated(notification: NSNotification) {

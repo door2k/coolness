@@ -16,12 +16,15 @@ import Foundation
 class appConfig {
     var params: [String : String] = [
         "username"  : "test",
-        "server"    : "10.0.0.47",
+        "server"    : "10.0.0.33",
+        "debug_server": "10.0.0.48",
+        "real_server": "10.0.0.33",
         "port"      : "5555",
         "region"    : "Home",
         "macmini_uuid"  : "B48AC6FE-2CB5-4F5A-B95F-058CE7127685",
         "macair_uuid"   : "1CCA025F-5B41-4390-9005-C375347C7C83",
-        "test"      : "1"
+        "test"      : "1",
+        "debug"     : "false"
     ]
     
     init (defaultValues: [String:String]) {

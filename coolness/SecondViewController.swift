@@ -53,6 +53,13 @@ class SecondViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         self.configView.alpha = 0.0
+        
+        if appConfig().params["debug"] == "true" {
+            self.isDebug.setOn(true, animated: true)
+        } else {
+            self.isDebug.setOn(false, animated: true)
+        }
+        
         self.regionLabel.text = appConfig().params["region"]
         self.userText.text = appConfig().params["username"]
         self.serverText.text = appConfig().params["server"]
@@ -70,12 +77,7 @@ class SecondViewController: UIViewController {
     }
     
     override func viewDidDisappear(animated: Bool) {
-        var userDefaults = NSUserDefaults()
-        appConfig().update("username", value: userText.text)
-        appConfig().update("server", value: serverText.text)
-        appConfig().update("port", value: portText.text)
-    
-        // appConfig().debug()
+        updateConfig()
     }
 
     @IBOutlet weak var configView: UIView!
@@ -85,13 +87,40 @@ class SecondViewController: UIViewController {
     @IBOutlet weak var portText: UITextField!
     @IBOutlet weak var serverText: UITextField!
     
+    @IBOutlet weak var isDebug: UISwitch!
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         self.view.endEditing(true)
-        appConfig().update("username", value: userText.text)
-        appConfig().update("server", value: serverText.text)
-        appConfig().update("port", value: portText.text)
+        updateConfig()
     }
     
+    @IBAction func debugSwitched(sender: AnyObject) {
+        var currentServer: String = ""
+        if self.isDebug.on {
+           NSLog("switch is on")
+            currentServer = appConfig().params["debug_server"]!
+        } else {
+            currentServer = appConfig().params["real_server"]!
+            
+        }
+        serverText.text = currentServer
+        updateConfig()
+        CNAppsManager.sharedInstance.reset()
+    }
+    
+    func updateConfig() {
+        if isDebug.on {
+            appConfig().update("debug", value: "true")
+            appConfig().update("debug_server", value: serverText.text)
+            appConfig().update("server", value: serverText.text)
+        } else {
+            appConfig().update("debug", value: "false")
+            appConfig().update("real_server", value: serverText.text)
+            appConfig().update("server", value: serverText.text)
+        }
+        
+        appConfig().update("username", value: userText.text)
+        appConfig().update("port", value: portText.text)
+    }
 }
 

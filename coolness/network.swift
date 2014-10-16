@@ -38,6 +38,7 @@ class network {
     }
     
     func getAppList() {
+        NSLog(server)
         let url = NSURL(string: "http://\(server):\(port)/windows_list?User=\(user)")
         
         let task = NSURLSession.sharedSession().dataTaskWithURL(url) {(data, response, error) in
@@ -89,6 +90,7 @@ class network {
         self.user = config.params["username"]!
         self.server = config.params["server"]!
         self.port = config.params["port"]!
+        NSLog("Server: \(server)")
     }
 }
 
